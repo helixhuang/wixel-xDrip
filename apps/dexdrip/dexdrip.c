@@ -99,6 +99,12 @@ unsigned char XDATA PM2_BUF[7] = {0x06,0x06,0x06,0x06,0x06,0x06,0x04};
 unsigned char XDATA dmaDesc[8] = {0x00,0x00,0xDF,0xBE,0x00,0x07,0x20,0x42};
 volatile uint8 sequential_missed_packets = 0;
 
+//Just for demo
+#define NUM_DEMODATA       (108)
+static XDATA uint32 nDemoData[NUM_DEMODATA] = {165769, 166274, 166748, 167176, 167546, 167846, 168067, 168202, 168248, 168202, 168067, 167846, 167546, 167176, 166748, 166274, 165769, 165248, 164727, 164222, 163748, 163320, 162950, 162650, 162429, 162294, 162248, 162294, 162429, 162650, 162950, 163320, 163748, 164222, 164727, 165248, 165769, 166274, 166748, 167176, 167546, 167846, 168067, 168202, 168248, 168202, 168067, 167846, 167546, 167176, 166748, 166274, 165769, 165248, 164727, 164222, 163748, 163320, 162950, 162650, 162429, 162294, 162248, 162294, 162429, 162650, 162950, 163320, 163748, 164222, 164727, 165248, 165769, 166274, 166748, 167176, 167546, 167846, 168067, 168202, 168248, 168202, 168067, 167846, 167546, 167176, 166748, 166274, 165769, 165248, 164727, 164222, 163748, 163320, 162950, 162650, 162429, 162294, 162248, 162294, 162429, 162650, 162950, 163320, 163748, 164222, 164727, 165248};
+int nDemoIndex = 0;
+int nLoopIndex = 0;
+
 typedef struct _Dexcom_packet {
     uint8   len;
     uint32  dest_addr;
@@ -501,7 +507,7 @@ void setADCInputs() {
 
 void configBt() {
     uartEnable();
-    printf("AT+NAMExDrip");
+    printf("AT+NAMEH04");
     uartDisable();
 }
 
@@ -527,10 +533,21 @@ void main() {
         Dexcom_packet Pkt;
         memset(&Pkt, 0, sizeof(Dexcom_packet));
         boardService();
-
-        if(get_packet(&Pkt)) {
-            print_packet(&Pkt);
+        
+        // Just for Demo
+        //if(get_packet(&Pkt)) {
+        //    print_packet(&Pkt);
+        //}
+        for (nLoopIndex = 0; nLoopIndex < 200; nLoopIndex++){
+        	delayMs(1000);
+        	doServices();
         }
+        uartEnable();
+        printf("%lu 104 1004", nDemoData[nDemoIndex]);
+        uartDisable();
+        nDemoIndex++;
+        if (nDemoIndex==NUM_DEMODATA) nDemoIndex = 0;
+        // END
 
         RFST = 4;
         delayMs(100);
